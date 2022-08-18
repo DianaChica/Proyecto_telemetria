@@ -19,6 +19,8 @@ Servo servo1;
 Espalexa alexita;
 int servo1Pin = 15;
 int state=0;
+float temp;
+float hum;
 DHT dht(DHTPIN, DHTTYPE);
 void Servom(uint8_t brightness);
 const char *UBIDOTS_TOKEN = "TOKEN QUE SE ENCUENTRA EN API CREDENTIALS UBIDOTS";  // Put here your Ubidots TOKEN
@@ -72,7 +74,7 @@ void Servom(uint8_t brightness){
       payload[0]=1;
   }
   else {
-     servo1.write(130);
+    servo1.write(130);
     Serial.println(" aire off ");
     state=0;
     payload[0]=0;
@@ -102,6 +104,8 @@ void setup()
 
 void loop()
 {
+  temp=obtenerTemp();
+  hum=obtenerHum();
   alexita.loop();
   if (!ubidots.connected())
   {
@@ -110,9 +114,6 @@ void loop()
 
   if (fabs(millis() - timer) > PUBLISH_FREQUENCY) // triggers the routine every 5 seconds
   {
-    float temp=obtenerTemp();
-    float hum=obtenerHum();
-    // variable Labels and the value to be sent
     ubidots.add(VARIABLE_LABEL2, state);
     ubidots.add(VARIABLE_LABEL, temp); 
     ubidots.add(VARIABLE_LABEL3, hum);
